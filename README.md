@@ -1,153 +1,176 @@
-# 👥 HR Employee Attrition Analysis using Random Forest
+# 👥 Employee Attrition Prediction Using Random Forest
 
-## 📖 Dataset Overview
+A machine learning project that uses **Random Forest classification** to predict employee attrition and identify the workforce characteristics that contribute most to predictive performance.
 
-The analysis uses the **HR Employee Attrition** dataset, which originally contained **14,999 observations** and **10 variables**.
+## 🎯 Problem
 
-To ensure data quality and model stability, all rows containing missing values were removed using `drop_na()`, resulting in a cleaned dataset of **14,430 observations**.
+Employee turnover can create significant recruitment, training, and productivity costs.
 
-### Dataset Features
+This project asks:
 
-| Variable | Description |
-|----------|-------------|
-| **left** | **Target variable** indicating employee status: **Stayed (0)** or **Left (1)** |
-| **satisfaction_level** | Employee job satisfaction score |
-| **last_evaluation** | Latest employee performance evaluation score |
-| **number_project** | Total number of projects handled by the employee |
-| **average_montly_hours** | Average monthly working hours |
-| **time_spend_company** | Number of years the employee has worked at the company |
-| **work_accident** | Whether the employee experienced a workplace accident |
-| **promotion_last_5years** | Whether the employee received a promotion within the last five years |
-| **department** | Employee's department or business unit |
-| **salary** | Employee salary category (**Low**, **Medium**, or **High**) |
+> **Can employee characteristics and workplace conditions be used to predict whether an employee will leave the organization?**
 
----
+The objectives are to:
 
-# 🌲 Random Forest Model
+* Build a classification model for employee attrition
+* Evaluate predictive performance on unseen data
+* Identify the most important features for prediction
+* Translate model results into practical HR insights
 
-A **Random Forest classifier** was trained to predict employee attrition using:
+## 📊 Dataset
 
-- **500 Decision Trees**
-- **70% Stratified Training Set** (**10,102 observations**)
-- **30% Testing Set** (**4,328 observations**)
+The analysis uses an **HR Employee Attrition dataset** containing information about employee satisfaction, performance, workload, tenure, compensation, and other workplace characteristics.
 
-The model leverages ensemble learning to improve predictive performance while reducing overfitting.
+The original dataset contains **14,999 observations and 10 variables**.
 
----
+After removing observations with missing values, **14,430 observations** remain for modeling.
 
-# 📊 Model Performance
+### Main Variables
 
-The Random Forest model achieved excellent predictive performance on unseen data.
+| Variable                | Description                                           |
+| ----------------------- | ----------------------------------------------------- |
+| `left`                  | Target: 1 = employee left, 0 = stayed                 |
+| `satisfaction_level`    | Employee job satisfaction                             |
+| `last_evaluation`       | Latest performance evaluation score                   |
+| `number_project`        | Number of projects handled                            |
+| `average_montly_hours`  | Average monthly working hours                         |
+| `time_spend_company`    | Years spent at the company                            |
+| `work_accident`         | Whether the employee experienced a workplace accident |
+| `promotion_last_5years` | Whether the employee received a recent promotion      |
+| `department`            | Employee department                                   |
+| `salary`                | Salary category                                       |
 
-| Metric | Result |
-|---------|--------|
-| **Out-of-Bag (OOB) Error Rate** | **1.00%** |
-| **Testing Accuracy** | **98.75%** |
-| **No Information Rate (Baseline)** | **79.21%** |
-| **Sensitivity (Stayed)** | **99.82%** |
-| **Specificity (Left)** | **94.67%** |
+## 🔬 Method
 
-### Performance Interpretation
+The analysis follows a supervised machine-learning workflow.
 
-### ✅ Overall Accuracy
+### 1. Data Preparation
 
-The model achieved an impressive **98.75% accuracy** on the testing dataset, substantially outperforming the baseline **No Information Rate (79.21%)**.
+* Handle missing observations
+* Define employee attrition as the binary target
+* Prepare categorical and numerical variables
+* Split the data using a **70/30 stratified train-test split**
 
-This demonstrates that the Random Forest model is highly effective at distinguishing employees who are likely to stay from those who are likely to leave.
+### 2. Random Forest
 
-### ✅ Out-of-Bag Validation
+A **Random Forest classifier** is trained using:
 
-The **Out-of-Bag (OOB) Error Rate** is only **1%**, indicating excellent internal validation performance and strong model generalization without significant overfitting.
+* **500 decision trees**
+* Stratified training data
+* Ensemble learning to reduce the variance of individual decision trees
 
-### ✅ Sensitivity
+Random Forest is particularly useful here because it can capture nonlinear relationships and interactions between employee characteristics without requiring a specific functional form.
 
-The model correctly identifies employees who **remain with the company** in **99.82%** of cases.
+### 3. Model Evaluation
 
-This extremely high recall minimizes false predictions that loyal employees will resign.
+Performance is evaluated using:
 
-### ✅ Specificity
+* Out-of-Bag (OOB) error
+* Test accuracy
+* Sensitivity
+* Specificity
+* Feature importance
 
-The model correctly detects employees who actually **leave the company** in **94.67%** of cases.
+Feature importance is evaluated using:
 
-This indicates strong capability in identifying potential employee attrition before it occurs.
+* **Mean Decrease Accuracy (MDA)**
+* **Mean Decrease Gini (MDG)**
 
----
+## 📈 Results
 
-# 📈 Feature Importance
+### Model Performance
 
-The Random Forest algorithm evaluates feature importance using two metrics:
+| Metric               |     Result |
+| -------------------- | ---------: |
+| **Test Accuracy**    | **98.75%** |
+| **OOB Error Rate**   |  **1.00%** |
+| Sensitivity — Stayed | **99.82%** |
+| Specificity — Left   | **94.67%** |
+| Baseline Accuracy    | **79.21%** |
 
-- **Mean Decrease Accuracy (MDA)** – Measures how much prediction accuracy decreases when a feature is removed.
-- **Mean Decrease Gini (MDG)** – Measures how effectively a variable improves decision tree splits.
+The Random Forest substantially outperforms the baseline accuracy on the test set.
 
----
+### Feature Importance
 
-## 🥇 Primary Driver of Employee Attrition
+The most influential variables according to Mean Decrease Gini include:
 
-### **Job Satisfaction (`satisfaction_level`)**
+| Feature                | Mean Decrease Gini |
+| ---------------------- | -----------------: |
+| `satisfaction_level`   |       **1,124.48** |
+| `time_spend_company`   |         **593.85** |
+| `number_project`       |         **581.12** |
+| `average_montly_hours` |         **484.80** |
+| `last_evaluation`      |         **419.98** |
 
-Job satisfaction is by far the most influential predictor of employee turnover.
+### Key Finding
 
-| Metric | Value |
-|---------|------:|
-| Mean Decrease Accuracy | **215.97** |
-| Mean Decrease Gini | **1124.48** |
+**Job satisfaction is the most important feature in the Random Forest model by a substantial margin.**
 
-### Interpretation
+Workload-related variables such as number of projects and monthly working hours, together with employee tenure and performance evaluation, also contribute strongly to predictive performance.
 
-Employees with lower satisfaction levels are significantly more likely to resign, making satisfaction the strongest determinant of employee retention.
+Variables such as department, salary, workplace accidents, and recent promotion contribute comparatively less according to the model's feature-importance measures.
 
----
+> **Important:** Feature importance indicates predictive contribution, not causal impact.
 
-## 🥈 Secondary Drivers
+## 📊 Visualization
 
-Several operational and workload-related variables also contribute substantially to predicting employee attrition.
+### Feature Importance
 
-| Feature | Mean Decrease Gini |
-|---------|-------------------:|
-| **time_spend_company** | **593.85** |
-| **number_project** | **581.12** |
-| **average_montly_hours** | **484.80** |
-| **last_evaluation** | **419.98** |
+![Random Forest Feature Importance](analysis_bar.png)
 
-### Interpretation
+The visualization highlights the relative importance of employee characteristics in the Random Forest model.
 
-These findings indicate that employee turnover is strongly associated with:
+The results show that **job satisfaction** is substantially more influential than the other variables included in the model.
 
-- Workload intensity
-- Number of assigned projects
-- Working hours
-- Employee tenure
-- Performance evaluation
+## 💡 Conclusion
 
-Together, these variables suggest that operational demands and organizational experience play an important role in influencing resignation decisions.
+The Random Forest model demonstrates strong predictive performance for employee attrition in this dataset, achieving **98.75% test accuracy** and a **1.00% OOB error rate**.
 
----
+The model identifies **job satisfaction** as the strongest predictive feature, followed by employee tenure, number of projects, working hours, and performance evaluation.
 
-## 📉 Low-Impact Features
+From an HR analytics perspective, these results suggest that employee experience and workload-related variables deserve particular attention when analyzing attrition risk.
 
-The following variables contribute relatively little to the predictive performance of the model:
+However, the findings should be interpreted as **predictive associations rather than causal relationships**. A feature being important to the Random Forest does not mean changing that feature will necessarily reduce employee turnover.
 
-- **Work_accident**
-- **promotion_last_5years**
-- **department**
-- **salary**
+### Future Improvements
 
-### Interpretation
+A stronger production-oriented model could include:
 
-Although these variables may influence employee experiences, they provide limited predictive value compared with employee satisfaction and workload-related factors.
+* Cross-validation
+* Hyperparameter tuning
+* Class-imbalance analysis
+* ROC-AUC and PR-AUC
+* SHAP-based model interpretation
+* Comparison with Logistic Regression and Gradient Boosting
+* Calibration of predicted attrition probabilities
 
-The Random Forest model indicates that **daily work experience** has a much stronger relationship with employee attrition than structural or demographic characteristics.
+## 🛠️ Technologies
 
----
+* **R**
+* **R Markdown**
+* **Random Forest**
+* **Classification**
+* **Machine Learning**
+* **Pandas / Data Manipulation**
+* **Statistical Analysis**
+* **Data Visualization**
 
-# 📝 Key Findings
+### Methods
 
-The analysis highlights several important insights:
+`Random Forest` `Classification` `Feature Importance` `Ensemble Learning` `Predictive Modeling`
 
-- **Job satisfaction** is the strongest predictor of employee attrition.
-- Employees with heavier workloads, longer working hours, and extended company tenure are more likely to leave.
-- The Random Forest model achieves **98.75% testing accuracy** with only a **1% Out-of-Bag error**, demonstrating excellent predictive capability.
-- Satisfaction and workload variables contribute far more to turnover prediction than salary, department, workplace accidents, or recent promotions.
+## 📁 Repository Structure
 
-Overall, the results suggest that improving employee satisfaction and effectively managing workload are likely to have a greater impact on employee retention than structural organizational factors alone.
+```text
+employee-attrition-random-forest/
+│
+├── hr_data.csv
+├── employee-attrition-random-forest.Rmd
+├── employee-attrition-random-forest.md
+├── analysis_bar.png
+└── README.md
+```
+
+## 📌 Topics
+
+`R` `Random Forest` `Machine Learning` `Employee Attrition` `HR Analytics` `Classification` `Predictive Modeling` `Feature Importance` `Data Science`
